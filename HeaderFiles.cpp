@@ -4,117 +4,6 @@ using namespace std;
 #define nl '\n'
 const int mod = 1000000007;
 
-class SGTree{
-	vector<int> seg;
-public:
-	SGTree(int n){
-		seg.resize(4 * n + 1);
-	}
-
-	void build(int ind, int low, int high, int arr[]){
-		if(low == high){
-			seg[ind] = arr[low];
-			return;
-		}
-
-		int mid = (low + high)/2;
-		build(2 * ind + 1, low , mid , arr);
-		build(2 * ind + 2, mid + 1, high, arr);
-		// seg[ind] = min(seg[2 * ind + 1], seg[2 * ind + 2]);
-		// seg[ind] = max(seg[2 * ind + 1], seg[2 * ind + 2]);
-		seg[ind] = (seg[2 * ind + 1] ^ seg[2 * ind + 2]);
-		// seg[ind] = (seg[2 * ind + 1] & seg[2 * ind + 2]);
-	}
-
-	int query(int ind, int low, int high, int l, int r){
-		//no overlap 
-		//l r, low high or low high l r
-		if(r < low || high < l) return INT_MAX;
-
-		//complete overlap
-		//[l  low high  r]
-
-		if(low >= l && high <= r) return seg[ind];
-		int mid = (low + high) / 2;
-		int left = query(2 * ind + 1, low , mid , l, r);
-
-		int right = query(2 * ind + 2, mid + 1, high, l, r);
-		// return min(left, right);
-		// return max(left, right);
-		return (left ^ right);
-		// return (left & right);
-	}
-	void update(int ind, int low, int high, int i, int val){
-		if(low == high){
-			seg[ind] = val;
-			return;
-		}
-
-		int mid = (low + high)/2;
-		if(i <= mid) update(2 * ind + 1, low, mid, i, val);
-		else update(2 * ind + 2, mid + 1, high, i, val);
-
-		// seg[ind] = min(seg[2 * ind + 1], seg[2 * ind + 2]);
-		// seg[ind] = max(seg[2 * ind + 1], seg[2 * ind + 2]);
-		seg[ind] = (seg[2 * ind + 1] ^ seg[2 * ind + 2]);
-		// seg[ind] = (seg[2 * ind + 1] & seg[2 * ind + 2]);
-	}
-};
-
-class DisjointSet{
-	vector<int> rank, parent, size;
-public:
-		DisjointSet(ll n) {
-		rank.resize(n + 1, 0);
-		parent.resize(n + 1);
-		size.resize(n + 1, 1);
-		for(ll i = 1; i <= n; i++) parent[i] = i;
-	}
-
-	void unionByRank(ll x, ll y) {
-
-		ll par_x = findPar(x);
-		ll par_y = findPar(y);
-
-		if(par_x == par_y) return;
-
-		if(rank[par_x] < rank[par_y]) {
-			parent[par_x] = par_y;
-		} else if(rank[par_y] < rank[par_x]) {
-			parent[par_y] = par_x;
-		} else {
-			parent[par_x] = par_y;
-			rank[par_y]++;
-		}
-	}
-
-	void unionBySize(ll x, ll y) {
-
-		ll par_x = findPar(x);
-		ll par_y = findPar(y);
-
-		if(par_x == par_y) return;
-
-		if(size[par_x] < size[par_y]) {
-			parent[par_x] = par_y;
-			size[par_y] += size[par_x];
-		} else {
-			parent[par_y] = par_x;
-			size[par_x] += size[par_y];
-		}
-	}
-
-	ll findPar(ll x) {
-
-		if(parent[x] == x) return x;
-
-		return parent[x] = findPar(parent[x]);
-
-	}
-
-};
-
-
 ll binpow(ll a,ll b) {
     ll ans = 1;
     while(b > 0) {
@@ -325,47 +214,6 @@ bool isPalindrome(string s) {
 	return true;
 }
 
-void solve() {
-    int n, m;
-    cin >> n >> m;
-    DisjointSet ds(n);
-
-    int cnt = 0;
-    vector<int> component_sizes(n, 0);
-
-    while (m--) {
-        int u, v;
-        cin >> u >> v;
-
-        u--, v--;
-
-        // Check if u and v are in the same component
-        if (ds.findPar(u) == ds.findPar(v)) {
-            // If they are in the same component, it means the current edge forms a cycle.
-            // You can increment the count of cyclic components.
-            cnt++;
-        } else {
-            // If they are not in the same component, merge them and update the component sizes.
-            ds.unionBySize(u, v);
-        }
-    }
-
-    // Now, count the number of connected components.
-    for (int i = 0; i < n; i++) {
-        component_sizes[ds.findPar(i)]++;
-    }
-
-    // The number of cyclic components is the number of components with size greater than 1.
-    int cyclic_components = 0;
-    for (int i = 0; i < n; i++) {
-        if (component_sizes[i] > 1) {
-            cyclic_components++;
-        }
-    }
-
-    cout << cyclic_components << endl;
-}
-
 void solve(){
 	int n, q;
 	cin>>n>>q;
@@ -373,22 +221,7 @@ void solve(){
 	vector<int> v(n);
 	for(int i = 0; i < n; i++) cin>>v[i];
 
-	while(q--){
-		int type;
-		cin>>type;
-
-		if(type == 1){
-			int l, r;
-			cin>>l>>r;
-
-			SGTree sg(n);
-			sg.build(0, l, r, v);
-		}
-		else{
-			int x;
-			cin>>x;
-		}
-	}
+	
 }
 signed main()
 {
