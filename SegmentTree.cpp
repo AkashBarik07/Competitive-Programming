@@ -45,6 +45,8 @@ public:
 		// return (left & right);
 	}
 	void update(int ind, int low, int high, int i, int val){
+		//here i, and val means the value(i) whicch we want to update with a value(val).
+		//so i = curr_value, val = updated value which we want to update
 		if(low == high){
 			seg[ind] = val;
 			return;
